@@ -4,21 +4,20 @@ import {
   Text,
   View,
   TextInput,
-  Button,
-  StatusBar,
   TouchableNativeFeedback,
-  KeyboardAvoidingView,
-  ScrollView,
-  Animated,
-  Keyboard
+  Keyboard,
+  AsyncStorage
 } from "react-native";
 
 import Listitem from "./Listitem";
+import Totalprice from "./Totalprice";
 
 export default class componentName extends Component {
   state = {
     data: [],
-    item: ""
+    item: "",
+    price: "",
+    total: 0
   };
 
   handleInput = text => {
@@ -27,31 +26,55 @@ export default class componentName extends Component {
     });
   };
 
+  handlePrice = val => {
+    this.setState({
+      price: val
+    });
+  };
+
+  componentDidMount() {
+    this.loadItems();
+  }
+
+  loadItems = async () => {
+    let value = await AsyncStorage.getItem("ToDos");
+    this.setState({
+      data: JSON.parse(value) || []
+    });
+
+    return value;
+  };
+
   addItem = () => {
-    let { data, item } = this.state;
+    let { data, item, price } = this.state;
     let name = item;
-    data.push(name);
+    let money = parseInt(price);
+    data.push([name, money]);
     this.setState({
       data: data,
-      item: ""
+      item: "",
+      price: ""
     });
+    this.saveItems(data);
+    console.log(data);
+
     Keyboard.dismiss();
+  };
+
+  saveItems = newItem => {
+    const saveItem = AsyncStorage.setItem("ToDos", JSON.stringify(newItem));
   };
 
   render() {
     return (
       <View style={styles.addListContainer}>
-        <StatusBar
-          barStyle="default"
-          hidden={false}
-          backgroundColor="#772ea2"
-          translucent={true}
-        />
         <View>
           <Listitem data={this.state.data} />
         </View>
+
+        <Totalprice loadItems={this.loadItems} />
         <View style={styles.addItemContainer}>
-          <Text style={styles.Header}>Add Items</Text>
+          {/* <Text style={styles.Header}>Add Items</Text> */}
           <View style={styles.inputContainer}>
             <View>
               <TextInput
@@ -65,8 +88,10 @@ export default class componentName extends Component {
             <View>
               <TextInput
                 style={styles.inputPrice}
-                keyboardType="numeric"
                 placeholder="Price"
+                keyboardType="numeric"
+                value={this.state.price}
+                onChangeText={this.handlePrice}
                 placeholderTextColor="silver"
               />
             </View>
@@ -86,6 +111,11 @@ export default class componentName extends Component {
 }
 
 const styles = StyleSheet.create({
+  addItemContainer: {
+    paddingLeft: 20,
+    paddingRight: 20
+  },
+
   Header: {
     textAlign: "center",
     fontSize: 20
