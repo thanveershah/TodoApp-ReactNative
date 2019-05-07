@@ -38,6 +38,7 @@ class Totalprice extends Component {
           onPress: async () => {
             await AsyncStorage.clear();
             await this.props.loadItems();
+            await this.props.clearTotal();
             this.setState({
               toggle: false,
               isDisabled: true
@@ -54,7 +55,7 @@ class Totalprice extends Component {
     return (
       <View style={styles.totalContainer}>
         <View>
-          <Text>Total : 500</Text>
+          <Text>Total : {this.props.total}</Text>
         </View>
         <View>
           <Switch

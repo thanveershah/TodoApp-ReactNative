@@ -38,31 +38,44 @@ export default class componentName extends Component {
 
   loadItems = async () => {
     let value = await AsyncStorage.getItem("ToDos");
+    let valueTotal = await AsyncStorage.getItem("Total");
     this.setState({
-      data: JSON.parse(value) || []
+      data: JSON.parse(value) || [],
+      total: JSON.parse(valueTotal) || 0
     });
-
-    return value;
   };
 
   addItem = () => {
-    let { data, item, price } = this.state;
+    const { data, item, price, total } = this.state;
     let name = item;
     let money = parseInt(price);
     data.push([name, money]);
+    let newTotal = total + money;
     this.setState({
       data: data,
       item: "",
-      price: ""
+      price: "",
+      total: newTotal
     });
     this.saveItems(data);
+    this.saveTotal(newTotal);
     console.log(data);
 
     Keyboard.dismiss();
   };
 
+  saveTotal = total => {
+    const saveItem = AsyncStorage.setItem("Total", JSON.stringify(total));
+  };
+
   saveItems = newItem => {
     const saveItem = AsyncStorage.setItem("ToDos", JSON.stringify(newItem));
+  };
+
+  clearTotal = () => {
+    this.setState({
+      total: 0
+    });
   };
 
   render() {
@@ -72,7 +85,11 @@ export default class componentName extends Component {
           <Listitem data={this.state.data} />
         </View>
 
-        <Totalprice loadItems={this.loadItems} />
+        <Totalprice
+          loadItems={this.loadItems}
+          total={this.state.total}
+          clearTotal={this.clearTotal}
+        />
         <View style={styles.addItemContainer}>
           {/* <Text style={styles.Header}>Add Items</Text> */}
           <View style={styles.inputContainer}>
