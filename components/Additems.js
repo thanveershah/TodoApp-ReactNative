@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableNativeFeedback,
   Keyboard,
+  Alert,
   AsyncStorage
 } from "react-native";
 
@@ -17,7 +18,8 @@ export default class componentName extends Component {
     data: [],
     item: "",
     price: "",
-    total: 0
+    total: 0,
+    isDisabled: true
   };
 
   handleInput = text => {
@@ -38,48 +40,96 @@ export default class componentName extends Component {
 
   loadItems = async () => {
     let value = await AsyncStorage.getItem("ToDos");
+    let valueTotal = await AsyncStorage.getItem("Total");
     this.setState({
-      data: JSON.parse(value) || []
+      data: JSON.parse(value) || [],
+      total: JSON.parse(valueTotal) || 0
     });
-
-    return value;
   };
 
   addItem = () => {
-    let { data, item, price } = this.state;
-    let name = item;
-    let money = parseInt(price);
-    data.push([name, money]);
-    this.setState({
-      data: data,
-      item: "",
-      price: ""
-    });
-    this.saveItems(data);
-    console.log(data);
+    const { data, item, price, total } = this.state;
+    if (item && price) {
+      let name = item;
+      let money = parseInt(price);
+      data.push([name, money]);
+      let newTotal = total + money;
+      this.setState({
+        data: data,
+        item: "",
+        price: "",
+        total: newTotal
+      });
+      this.saveItems(data);
+      this.saveTotal(newTotal);
+      Keyboard.dismiss();
+    } else {
+      return false;
+    }
+  };
 
-    Keyboard.dismiss();
+  saveTotal = total => {
+    const saveItem = AsyncStorage.setItem("Total", JSON.stringify(total));
   };
 
   saveItems = newItem => {
     const saveItem = AsyncStorage.setItem("ToDos", JSON.stringify(newItem));
   };
 
+  clearTotal = () => {
+    this.setState({
+      total: 0
+    });
+  };
+
+  deleteItem = (items, key) => {
+    Alert.alert(
+      "Are you sure ?",
+      `${items[0]} will be deleted`,
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            const { data, item, price, total } = this.state;
+            data.splice(key, 1);
+            let subtracted = total - items[1];
+            this.setState({
+              data: data,
+              total: subtracted
+            });
+            this.saveItems(data);
+            this.saveTotal(subtracted);
+          }
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+
   render() {
     return (
       <View style={styles.addListContainer}>
         <View>
-          <Listitem data={this.state.data} />
+          <Listitem data={this.state.data} deleteItem={this.deleteItem} />
         </View>
 
-        <Totalprice loadItems={this.loadItems} />
+        <Totalprice
+          loadItems={this.loadItems}
+          total={this.state.total}
+          clearTotal={this.clearTotal}
+        />
         <View style={styles.addItemContainer}>
           {/* <Text style={styles.Header}>Add Items</Text> */}
           <View style={styles.inputContainer}>
             <View>
               <TextInput
                 style={styles.inputName}
-                placeholder="Item Name"
+                placeholder="Name"
                 value={this.state.item}
                 placeholderTextColor="silver"
                 onChangeText={this.handleInput}
@@ -88,7 +138,7 @@ export default class componentName extends Component {
             <View>
               <TextInput
                 style={styles.inputPrice}
-                placeholder="Price"
+                placeholder="₹"
                 keyboardType="numeric"
                 value={this.state.price}
                 onChangeText={this.handlePrice}
@@ -97,7 +147,6 @@ export default class componentName extends Component {
             </View>
           </View>
           <View style={styles.addBtnContainer}>
-            {/* #005068 */}
             <TouchableNativeFeedback onPress={this.addItem}>
               <View style={styles.addBtn}>
                 <Text style={styles.addBtnText}>Add</Text>
@@ -113,7 +162,9 @@ export default class componentName extends Component {
 const styles = StyleSheet.create({
   addItemContainer: {
     paddingLeft: 20,
-    paddingRight: 20
+    paddingRight: 20,
+    backgroundColor: "white",
+    height: "100%"
   },
 
   Header: {
@@ -148,6 +199,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5
   },
+
   addBtnText: {
     color: "#ffff",
     textAlign: "center",
