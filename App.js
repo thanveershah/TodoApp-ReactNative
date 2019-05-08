@@ -1,11 +1,6 @@
 import React, { Component } from "react";
 import Additems from "./components/Additems";
-import {
-  StyleSheet,
-  KeyboardAvoidingView,
-  StatusBar,
-  View
-} from "react-native";
+import { StyleSheet, KeyboardAvoidingView, StatusBar } from "react-native";
 
 export default class App extends Component {
   render() {
@@ -21,6 +16,7 @@ export default class App extends Component {
 
 const styles = StyleSheet.create({
   MainContainer: {
-    backgroundColor: "#FFFF"
+    backgroundColor: "white",
+    flex: 1
   }
 });

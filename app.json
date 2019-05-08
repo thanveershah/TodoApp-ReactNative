@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "firstProject",
-    "slug": "MyReactNative",
+    "name": "Expenses",
+    "slug": "ExpensesApp",
     "privacy": "public",
     "sdkVersion": "32.0.0",
     "platforms": [
@@ -14,7 +14,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#032a3b"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -23,7 +23,13 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "buildNumber": "3"
+    },
+    "android": {
+      "package": "com.shahstudios.expenses",
+      "permissions": [],
+      "versionCode": 3
     }
   }
 }

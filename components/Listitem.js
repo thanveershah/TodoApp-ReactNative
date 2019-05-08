@@ -1,47 +1,80 @@
-import React from "react";
-import { StyleSheet, Text, View, Button, ScrollView } from "react-native";
+import React, { Component } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  ScrollView,
+  TouchableNativeFeedback
+} from "react-native";
 
-const Listitem = props => {
-  return (
-    <View style={styles.listitemContainer}>
-      <Text
-        style={{
-          textAlign: "center",
-          fontSize: 20,
-          backgroundColor: "#05a5d1",
-          color: "white",
-          paddingTop: 5,
-          paddingBottom: 20
-        }}
-      >
-        Items
-      </Text>
-      <View style={styles.table}>
-        <View style={styles.headers}>
-          <View style={styles.nameHeader}>
-            <Text style={{ fontWeight: "bold", color: "#05a5d1" }}>Name</Text>
-          </View>
-          <View style={styles.nameHeader}>
-            <Text style={{ fontWeight: "bold", color: "#05a5d1" }}>Price</Text>
-          </View>
-        </View>
+class Listitem extends Component {
+  delItem = (data, key) => {
+    this.props.deleteItem(data, key);
+  };
 
-        <ScrollView showsHorizontalScrollIndicator={false}>
-          {props.data.map((data, key) => (
-            <View key={key} style={styles.datas}>
-              <View>
-                <Text style={styles.nameDatas}>{data[0]}</Text>
-              </View>
-              <View>
-                <Text style={styles.nameDatas}> ₹{data[1]}</Text>
-              </View>
+  render() {
+    return (
+      <View style={styles.listitemContainer}>
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 20,
+            backgroundColor: "#05a5d1",
+            color: "white",
+            paddingTop: 15,
+            paddingBottom: 20
+          }}
+        >
+          Expenses
+        </Text>
+
+        <View style={styles.table}>
+          <View style={styles.headers}>
+            <View style={styles.nameHeader}>
+              <Text style={{ fontWeight: "bold", color: "#05a5d1" }}>Name</Text>
             </View>
-          ))}
-        </ScrollView>
+            <View style={styles.nameHeader}>
+              <Text style={{ fontWeight: "bold", color: "#05a5d1" }}>
+                Price
+              </Text>
+            </View>
+          </View>
+
+          <ScrollView showsHorizontalScrollIndicator={false}>
+            {this.props.data.map((data, key) => (
+              <View key={key} style={styles.datas}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.nameDatas}>{data[0]}</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <View
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <Text style={styles.priceDatas}>₹{data[1]} </Text>
+                    <TouchableNativeFeedback
+                      onPress={() => this.delItem(data, key)}
+                    >
+                      <View
+                        style={{ flex: 0.2, position: "relative", right: 30 }}
+                      >
+                        <Text style={styles.deleteBtn}>X</Text>
+                      </View>
+                    </TouchableNativeFeedback>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
       </View>
-    </View>
-  );
-};
+    );
+  }
+}
 
 export default Listitem;
 
@@ -78,6 +111,24 @@ const styles = StyleSheet.create({
   },
   nameDatas: {
     fontSize: 18,
-    color: "white"
+    color: "white",
+    textAlign: "center"
+  },
+  priceDatas: {
+    fontSize: 18,
+    color: "white",
+    textAlign: "center",
+    flex: 1,
+    paddingLeft: 30
+  },
+  deleteBtn: {
+    color: "#05a5d1",
+    fontWeight: "bold",
+    borderRadius: 100,
+    borderRadius: 500,
+    textAlign: "center",
+    paddingTop: 2,
+    paddingBottom: 2,
+    backgroundColor: "white"
   }
 });

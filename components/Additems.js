@@ -163,8 +163,7 @@ const styles = StyleSheet.create({
   addItemContainer: {
     paddingLeft: 20,
     paddingRight: 20,
-    backgroundColor: "white",
-    height: "100%"
+    backgroundColor: "white"
   },
 
   Header: {
